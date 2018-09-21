@@ -1,0 +1,13 @@
+server:
+    port: 5001
+
+logging:
+    level:
+        org:
+            springframework:
+                web: DEBUG
+
+spring:
+    data:
+        mongodb:
+            database: profile_db

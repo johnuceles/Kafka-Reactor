@@ -2,7 +2,6 @@ package com.reactor.kafka.controller;
 
 import com.reactor.kafka.model.User;
 import com.reactor.kafka.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,8 +13,11 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
 
-    @Autowired
-    UserService userService;
+    private UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping(params = "id")
     public User getUser(@RequestParam("id") String id) {

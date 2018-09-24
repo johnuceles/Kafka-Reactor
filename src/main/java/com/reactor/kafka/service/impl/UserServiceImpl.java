@@ -1,8 +1,11 @@
 package com.reactor.kafka.service.impl;
 
+import com.reactor.kafka.exception.UserNotFoundException;
 import com.reactor.kafka.model.User;
 import com.reactor.kafka.repository.UserRepository;
 import com.reactor.kafka.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,15 +16,26 @@ public class UserServiceImpl implements UserService {
 
     private UserRepository userRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    private KafkaTemplate<String, String> kafkaTemplate;
+
+    public UserServiceImpl(UserRepository userRepository, KafkaTemplate<String, String> kafkaTemplate) {
         this.userRepository = userRepository;
+        this.kafkaTemplate = kafkaTemplate;
     }
+
+    @Value("${kafka.topicName}")
+    private String kafkaTopicName;
 
     @Override
     public User getUser(String id) {
 
         Optional<User> user = userRepository.findById(id);
-        return user.get();
+        if(user.isPresent()) {
+            kafkaTemplate.send(kafkaTopicName, user.get().toString());
+            return user.get();
+        }
+        else
+            throw new UserNotFoundException("User not found with id " + id);
     }
 
     @Override

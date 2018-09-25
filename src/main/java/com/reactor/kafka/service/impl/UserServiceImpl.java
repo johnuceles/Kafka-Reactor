@@ -24,14 +24,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Value("${kafka.topicName}")
-    private String kafkaTopicName;
+    private String topicName;
 
     @Override
     public User getUser(String id) {
 
         Optional<User> user = userRepository.findById(id);
         if(user.isPresent()) {
-            kafkaTemplate.send(kafkaTopicName, user.get().toString());
+            kafkaTemplate.send(topicName, user.get().toString());
             return user.get();
         }
         else
